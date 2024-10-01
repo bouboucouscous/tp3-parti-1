@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using tp3._2.WCFMeteo;
+using tp3._2.moi;
 
 using System.Net;
 using System.IO;
@@ -64,6 +65,55 @@ namespace tp3._2
             str = str.Substring(0, str.IndexOf("<"));
 
             textBox3.Text = $"Température : {str}°";
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            ServiceClient sr;
+            sr = new ServiceClient();
+
+            textBox4.Text = sr.Meteo_GetTemperature();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            chart1.Series.Clear();
+
+            ServiceClient sr;
+            sr = new ServiceClient();
+
+            DataSet ds = sr.Meteo_GetTemperatureDay(dateTimePicker1.Value.Date.ToString("yyyy-MM-dd"));
+            
+            chart1.DataSource = ds.Tables[0];
+            #region température
+            chart1.Series.Add("Temp");
+            chart1.Series["Temp"].XValueMember = "DateReleveVC";
+            chart1.Series["Temp"].YValueMembers = "Temp";
+
+            chart1.Series["Temp"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            chart1.Series["Temp"].LegendText = "Température";
+            #endregion
+
+            #region température ressentie
+            chart1.Series.Add("TempR");
+            chart1.Series["TempR"].XValueMember = "DateReleveVC";
+            chart1.Series["TempR"].YValueMembers = "TempR";
+
+            chart1.Series["TempR"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            chart1.Series["TempR"].LegendText = "Température ressentie";
+            #endregion
+
+            #region température du point rosé
+            chart1.Series.Add("TempPR");
+            chart1.Series["TempPR"].XValueMember = "DateReleveVC";
+            chart1.Series["TempPR"].YValueMembers = "TempPR";
+
+            chart1.Series["TempPR"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            chart1.Series["TempPR"].LegendText = "Température du point de la rosée";
+            #endregion
+
+            chart1.DataBind();
+            chart1.Visible = true;
         }
     }
 }
